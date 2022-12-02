@@ -1,7 +1,7 @@
 calories_by_elf = []
 
 calories = []
-File.open('d01.input.txt').each do |line|
+File.open('input.txt').each do |line|
   if line.strip.empty?
     calories_by_elf.push(calories)
     calories = []
