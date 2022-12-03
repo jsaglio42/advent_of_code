@@ -1,5 +1,3 @@
-# frozen-string-literal: true
-
 calories_by_elf = []
 calories = []
 
