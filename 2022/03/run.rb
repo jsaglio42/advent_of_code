@@ -1,5 +1,7 @@
 # frozen-string-literal: true
 
+file = File.read('input.txt').split("\n")
+
 def priority(char)
   'A'.ord <= char.ord && char.ord <= 'Z'.ord ? 27 + char.ord - 'A'.ord : 1 + char.ord - 'a'.ord
 end
@@ -23,4 +25,12 @@ def common_item(rucksack)
 end
 
 # Answer 1
-puts File.foreach('input.txt').map { |line| priority(common_item(line)) }.sum
+puts(file.map { |line| priority(common_item(line)) }.sum)
+
+# Answer 2
+puts(
+  file
+    .each_slice(3)
+    .map { |first, second, third| priority((first.split('') & second.split('') & third.split('')).first) }
+    .sum,
+)

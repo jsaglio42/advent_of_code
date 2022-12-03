@@ -1,5 +1,7 @@
 # frozen-string-literal: true
 
+file = File.read('input.txt').split("\n")
+
 PAPER = 'PAPER'
 ROCK = 'ROCK'
 SCISSOR = 'SCISSOR'
@@ -47,16 +49,14 @@ def match_score(opponent, me)
   OUTCOME_MAPPING[opponent][me] + move_score(me)
 end
 
+# Answer 1
 result =
-  File
-    .foreach('input.txt')
+  file
     .map do |line|
       opponent_move, my_move = line.split.map { |choice| CHOICE_TO_MOVE[choice] }
       match_score(opponent_move, my_move)
     end
     .sum
-
-# Answer 1
 puts result
 
 def find_move(opponent_move, outcome)
@@ -64,9 +64,9 @@ def find_move(opponent_move, outcome)
   move
 end
 
+# Answer 2
 result =
-  File
-    .foreach('input.txt')
+  file
     .map do |line|
       opponent_choice, outcome = line.split
       opponent_move = CHOICE_TO_MOVE[opponent_choice]
@@ -75,6 +75,4 @@ result =
       match_score(opponent_move, my_move)
     end
     .sum
-
-# Answer 2
 puts result
