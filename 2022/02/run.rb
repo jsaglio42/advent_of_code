@@ -2,75 +2,58 @@
 
 file = File.read('input.txt').split("\n")
 
-PAPER = 'PAPER'
-ROCK = 'ROCK'
-SCISSOR = 'SCISSOR'
+SCORE_BY_OUTCOME = { LOSS: 0, DRAW: 3, WIN: 6 }.freeze
+SCORE_BY_MOVE = { ROCK: 1, PAPER: 2, SCISSOR: 3 }.freeze
 
-LOSS = 0
-DRAW = 3
-WIN = 6
-
-CHOICE_TO_MOVE = { 'A' => ROCK, 'B' => PAPER, 'C' => SCISSOR, 'X' => ROCK, 'Y' => PAPER, 'Z' => SCISSOR }.freeze
-
-CHOICE_TO_OUTCOME = { 'X' => LOSS, 'Y' => DRAW, 'Z' => WIN }.freeze
-
-OUTCOME_MAPPING = {
-  ROCK => {
-    ROCK => DRAW,
-    PAPER => WIN,
-    SCISSOR => LOSS,
+OUTCOME_TABLE = {
+  ROCK: {
+    ROCK: :DRAW,
+    PAPER: :WIN,
+    SCISSOR: :LOSS,
   },
-  PAPER => {
-    ROCK => LOSS,
-    PAPER => DRAW,
-    SCISSOR => WIN,
+  PAPER: {
+    ROCK: :LOSS,
+    PAPER: :DRAW,
+    SCISSOR: :WIN,
   },
-  SCISSOR => {
-    ROCK => WIN,
-    PAPER => LOSS,
-    SCISSOR => DRAW,
+  SCISSOR: {
+    ROCK: :WIN,
+    PAPER: :LOSS,
+    SCISSOR: :DRAW,
   },
 }
 
-def move_score(move)
-  case move
-  when ROCK
-    1
-  when PAPER
-    2
-  when SCISSOR
-    3
-  else
-    0
-  end
-end
+MOVE_BY_ENCRYPTED_INPUT = { A: :ROCK, B: :PAPER, C: :SCISSOR, X: :ROCK, Y: :PAPER, Z: :SCISSOR }.freeze
 
-def match_score(opponent, me)
-  OUTCOME_MAPPING[opponent][me] + move_score(me)
+def match_score(opponent_move, my_move)
+  outcome = OUTCOME_TABLE[opponent_move][my_move]
+  SCORE_BY_OUTCOME[outcome] + SCORE_BY_MOVE[my_move]
 end
 
 # Answer 1
 result =
   file
     .map do |line|
-      opponent_move, my_move = line.split.map { |choice| CHOICE_TO_MOVE[choice] }
+      opponent_move, my_move = line.split.map(&:to_sym).map { |input| MOVE_BY_ENCRYPTED_INPUT[input] }
       match_score(opponent_move, my_move)
     end
     .sum
 pp result
 
 def find_move(opponent_move, outcome)
-  move, = OUTCOME_MAPPING[opponent_move].find { |_, v| v == outcome }
+  move, = OUTCOME_TABLE[opponent_move].find { |_, target_outcome| target_outcome == outcome }
   move
 end
+
+OUTCOME_BY_ENCRYPTED_INPUT = { X: :LOSS, Y: :DRAW, Z: :WIN }.freeze
 
 # Answer 2
 result =
   file
     .map do |line|
-      opponent_choice, outcome = line.split
-      opponent_move = CHOICE_TO_MOVE[opponent_choice]
-      outcome = CHOICE_TO_OUTCOME[outcome]
+      opponent_input, outcome = line.split.map(&:to_sym)
+      opponent_move = MOVE_BY_ENCRYPTED_INPUT[opponent_input]
+      outcome = OUTCOME_BY_ENCRYPTED_INPUT[outcome]
       my_move = find_move(opponent_move, outcome)
       match_score(opponent_move, my_move)
     end
