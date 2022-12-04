@@ -1,4 +1,3 @@
-#!ruby
 # frozen-string-literal: true
 
 file = File.read('input.txt').split("\n")
@@ -29,13 +28,13 @@ def assignement_full_overlap?(first_assignement, second_assignement)
 end
 
 # Answer 1
-puts(
+pp(
   input.count do |first_assignement, second_assignement|
     assignement_full_overlap?(first_assignement, second_assignement)
   end,
 )
 
 # Answer 2
-puts(
+pp(
   input.count { |first_assignement, second_assignement| small_section_overlap?(first_assignement, second_assignement) },
 )

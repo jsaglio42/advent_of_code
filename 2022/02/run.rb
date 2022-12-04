@@ -1,4 +1,3 @@
-#!ruby
 # frozen-string-literal: true
 
 file = File.read('input.txt').split("\n")
@@ -58,7 +57,7 @@ result =
       match_score(opponent_move, my_move)
     end
     .sum
-puts result
+pp result
 
 def find_move(opponent_move, outcome)
   move, = OUTCOME_MAPPING[opponent_move].find { |_, v| v == outcome }
@@ -76,4 +75,4 @@ result =
       match_score(opponent_move, my_move)
     end
     .sum
-puts result
+pp result
