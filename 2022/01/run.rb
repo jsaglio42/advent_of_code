@@ -1,3 +1,4 @@
+#!ruby
 # frozen-string-literal: true
 
 input = File.read('input.txt').split("\n\n").map { |line| line.split("\n") }.map { |line| line.map(&:to_i) }

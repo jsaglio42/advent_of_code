@@ -1,3 +1,4 @@
+#!ruby
 # frozen-string-literal: true
 
 file = File.read('input.txt').split("\n")
