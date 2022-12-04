@@ -5,28 +5,19 @@ file = File.read('input.txt').split("\n")
 SCORE_BY_OUTCOME = { LOSS: 0, DRAW: 3, WIN: 6 }.freeze
 SCORE_BY_MOVE = { ROCK: 1, PAPER: 2, SCISSOR: 3 }.freeze
 
-OUTCOME_TABLE = {
-  ROCK: {
-    ROCK: :DRAW,
-    PAPER: :WIN,
-    SCISSOR: :LOSS,
-  },
-  PAPER: {
-    ROCK: :LOSS,
-    PAPER: :DRAW,
-    SCISSOR: :WIN,
-  },
-  SCISSOR: {
-    ROCK: :WIN,
-    PAPER: :LOSS,
-    SCISSOR: :DRAW,
-  },
-}
+WINING_MOVES = { ROCK: :PAPER, SCISSOR: :ROCK, PAPER: :SCISSOR }.freeze
+LOSING_MOVES = WINING_MOVES.to_a.map(&:reverse).to_h
 
 MOVE_BY_ENCRYPTED_INPUT = { A: :ROCK, B: :PAPER, C: :SCISSOR, X: :ROCK, Y: :PAPER, Z: :SCISSOR }.freeze
 
+def math_outchome(opponent_move, my_move)
+  return :DRAW if opponent_move == my_move
+
+  WINING_MOVES[opponent_move] == my_move ? :WIN : :LOSS
+end
+
 def match_score(opponent_move, my_move)
-  outcome = OUTCOME_TABLE[opponent_move][my_move]
+  outcome = math_outchome(opponent_move, my_move)
   SCORE_BY_OUTCOME[outcome] + SCORE_BY_MOVE[my_move]
 end
 
@@ -41,8 +32,9 @@ result =
 pp result
 
 def find_move(opponent_move, outcome)
-  move, = OUTCOME_TABLE[opponent_move].find { |_, target_outcome| target_outcome == outcome }
-  move
+  return opponent_move if outcome == :DRAW
+
+  outcome == :WIN ? WINING_MOVES[opponent_move] : LOSING_MOVES[opponent_move]
 end
 
 OUTCOME_BY_ENCRYPTED_INPUT = { X: :LOSS, Y: :DRAW, Z: :WIN }.freeze
