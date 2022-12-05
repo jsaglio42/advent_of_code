@@ -1,0 +1,14 @@
+AllCops:
+  NewCops: enable
+
+Metrics/AbcSize:
+  Enabled: false
+
+Naming/VariableNumber:
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: false

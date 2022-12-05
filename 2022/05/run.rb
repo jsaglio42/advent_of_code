@@ -1,8 +1,8 @@
-# frozen-string-literal: true
+# frozen_string_literal: true
 
-file = File.read('input.txt').split("\n\n")
+inputs = File.read('input.txt').split("\n\n")
 
-cargo_input, instructions_input = file.map { |line| line.split("\n") }
+cargo_input, instructions_input = inputs.map { |line| line.split("\n") }
 
 def parse_cargo(input)
   size = (input.first.size + 1) / 4
@@ -10,7 +10,7 @@ def parse_cargo(input)
 
   input[...-1].each do |line|
     (0...size).each do |index|
-      crate = line[index * 4 + 1]
+      crate = line[(index * 4) + 1]
       next if crate.strip.empty?
 
       output[index].push(crate)
