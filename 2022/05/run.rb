@@ -29,13 +29,13 @@ end
 cargo = parse_cargo(cargo_input)
 instructions = parse_instructions(instructions_input)
 
-def apply_instructions_9000!(cargo, instructions)
+def apply_instructions_9000(cargo, instructions)
   result = cargo.map(&:clone)
   instructions.each { |count, source, target| count.times { result[target - 1].push(result[source - 1].pop) } }
   result
 end
 
-def apply_instructions_9001!(cargo, instructions)
+def apply_instructions_9001(cargo, instructions)
   result = cargo.map(&:clone)
   instructions.each do |count, source, target|
     tmp = []
@@ -46,7 +46,7 @@ def apply_instructions_9001!(cargo, instructions)
 end
 
 # Answer 1
-pp apply_instructions_9000!(cargo, instructions).map(&:last).join
+pp apply_instructions_9000(cargo, instructions).map(&:last).join
 
 # Answer 2
-pp apply_instructions_9001!(cargo, instructions).map(&:last).join
+pp apply_instructions_9001(cargo, instructions).map(&:last).join
