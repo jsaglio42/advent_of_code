@@ -58,11 +58,11 @@ pp dir_strange_size(FILE_SYSTEM)
 
 # Answer 2
 space_to_free = 30_000_000 - (70_000_000 - dir_size(FILE_SYSTEM))
-def valid_sizes(hash, treshold)
+def valid_directory_sizes(hash, treshold)
   tmp = []
   tmp.push(dir_size(hash)) if dir_size(hash) >= treshold
-  hash.each { |_, v| tmp.push(valid_sizes(v, treshold)) if v.is_a?(Hash) }
+  hash.each { |_, v| tmp.push(valid_directory_sizes(v, treshold)) if v.is_a?(Hash) }
   tmp
 end
 
-pp valid_sizes(FILE_SYSTEM, space_to_free).flatten.min
+pp valid_directory_sizes(FILE_SYSTEM, space_to_free).flatten.min
