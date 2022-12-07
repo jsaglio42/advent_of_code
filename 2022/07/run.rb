@@ -2,11 +2,6 @@
 
 file = File.read('input.txt').split("\n")
 
-ROOT_FOLDER = "#{Dir.pwd}/tmp".freeze
-
-system("rm -rf #{ROOT_FOLDER}")
-system("mkdir #{ROOT_FOLDER}")
-
 CURRENT_PATH = ['/']
 FILE_SYSTEM = { '/' => {} }
 
@@ -57,7 +52,11 @@ end
 pp dir_strange_size(FILE_SYSTEM)
 
 # Answer 2
-space_to_free = 30_000_000 - (70_000_000 - dir_size(FILE_SYSTEM))
+DISK_SIZE = 70_000_000
+NEEDED_SPACE = 30_000_000
+FREE_SPACE = DISK_SIZE - dir_size(FILE_SYSTEM)
+SPACE_TO_FREE = NEEDED_SPACE - FREE_SPACE
+
 def valid_directory_sizes(hash, treshold)
   tmp = []
   tmp.push(dir_size(hash)) if dir_size(hash) >= treshold
@@ -65,4 +64,4 @@ def valid_directory_sizes(hash, treshold)
   tmp
 end
 
-pp valid_directory_sizes(FILE_SYSTEM, space_to_free).flatten.min
+pp valid_directory_sizes(FILE_SYSTEM, SPACE_TO_FREE).flatten.min
