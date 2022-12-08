@@ -13,16 +13,11 @@ end
 
 def common_item(rucksack)
   first, second = compartments(rucksack)
-  (first.split('') & second.split('')).first
+  (first.chars & second.chars).first
 end
 
 # Answer 1
 pp(file.map { |line| priority(common_item(line)) }.sum)
 
 # Answer 2
-pp(
-  file
-    .each_slice(3)
-    .map { |first, second, third| priority((first.split('') & second.split('') & third.split('')).first) }
-    .sum,
-)
+pp(file.each_slice(3).map { |first, second, third| priority((first.chars & second.chars & third.chars).first) }.sum)
