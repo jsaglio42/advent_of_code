@@ -21,3 +21,6 @@ Metrics/PerceivedComplexity:
 
 Naming/MethodParameterName:
   Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
