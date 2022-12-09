@@ -23,20 +23,24 @@ def move_to_apply(delta)
   delta[0].abs == 2 ? Vector[delta[0] / 2, delta[1]] : Vector[delta[0], delta[1] / 2]
 end
 
+def apply_move_to_rope(current_rope, direction)
+  new_rope = [current_rope.first + DIRECTION[direction]]
+
+  current_rope[1..].each do |tail|
+    new_head = new_rope.last
+    delta = new_head - tail
+    new_tail = tail + move_to_apply(delta)
+    new_rope.push(new_tail)
+  end
+
+  new_rope
+end
+
 def solve!(rope_positions, input)
-  input.each do |dir, dist|
-    dist.times do
+  input.each do |direction, distance|
+    distance.times do
       current_rope = rope_positions.last
-      new_rope = [current_rope.first + DIRECTION[dir]]
-
-      current_rope[1..].each do |tail|
-        new_head = new_rope.last
-        delta = new_head - tail
-        new_tail = tail + move_to_apply(delta)
-
-        new_rope.push(new_tail)
-      end
-
+      new_rope = apply_move_to_rope(current_rope, direction)
       rope_positions.push(new_rope)
     end
   end
