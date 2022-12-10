@@ -9,9 +9,6 @@ inputs =
       [instruction.to_sym, argument&.to_i]
     end
 
-CLOCK_MARKS = [20, 60, 100, 140, 180, 220].freeze
-TIME_TO_EXEC = { noop: 0, addx: 2 }
-
 class CRT
   def initialize
     @screen = ' ' * 240
@@ -30,6 +27,8 @@ end
 
 class CPU
   attr_accessor :register
+
+  TIME_TO_EXEC = { noop: 0, addx: 2 }
 
   def initialize
     @register = 1
