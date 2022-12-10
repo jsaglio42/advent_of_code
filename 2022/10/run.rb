@@ -10,16 +10,21 @@ inputs =
     end
 
 CLOCK_MARKS = [20, 60, 100, 140, 180, 220].freeze
+TIME_TO_EXEC = {
+  noop: 0,
+  addx: 2
+}
 
 class CRT
   def initialize
     @screen = " " * 240
   end
 
-  def draw(clock, acc_value)
+  def tick(clock, pixel)
+    return if clock > 240
     x_pos = (clock - 1) % 40
 
-    if (acc_value - x_pos).abs < 2
+    if (clock - 1) < 270 && (pixel - x_pos).abs < 2
       @screen[clock - 1] = '#'
     end
   end
@@ -30,44 +35,64 @@ class CRT
 end
 
 class CPU
-  attr_accessor :clock, :acc_values, :crt
+  attr_accessor :register
 
-  def initialize(crt)
-    @acc = 1
-    @clock = 1
-    @acc_values = []
-    @crt = crt
+  def initialize
+    @register = 1
+    @time_to_exec = 0
+    @instruction, @argument = nil, nil
   end
 
-  def increment_clock
-    @acc_values.push(@acc) if CLOCK_MARKS.include?(@clock)
-    @crt.draw(@clock, @acc)
-    @clock += 1
+  def push(input)
+    raise "busy" if @instruction
+
+    @instruction, @argument = input
+    @time_to_exec = TIME_TO_EXEC[@instruction]
+  end
+
+  def available?
+    @instruction.nil?
   end
 
   def noop
-    increment_clock
   end
 
-  def addx(value)
-    increment_clock
-    increment_clock
-    @acc += value
+  def addx
+    @register += @argument
+  end
+
+  def tick
+    @time_to_exec -= 1
+
+    if @time_to_exec < 1
+      self.send(@instruction)
+      @instruction = nil
+    end
   end
 end
 
-cpu = CPU.new(CRT.new)
-inputs.each do |instruction, argument|
-  case instruction
-  when :noop
-    cpu.noop
-  when :addx
-    cpu.addx(argument)
+def compute_strengh(memory)
+  memory.each_with_index.map { |value, index| value * CLOCK_MARKS[index] }.sum
+end
+
+clock = 0
+memory = []
+cpu = CPU.new
+crt = CRT.new
+while !(inputs.empty? && cpu.available?) do
+  clock +=1
+  memory.push(cpu.register) if CLOCK_MARKS.include?(clock)
+  
+  if cpu.available?
+    cpu.push(inputs.shift)
   end
+
+  crt.tick(clock, cpu.register)
+  cpu.tick
 end
 
 # Answer 1
-pp cpu.acc_values.each_with_index.map { |strengh, index| strengh * CLOCK_MARKS[index] }.sum
+pp compute_strengh(memory)
 
 # Answer 2
-cpu.crt.dump
+crt.dump
