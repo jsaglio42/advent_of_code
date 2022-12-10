@@ -15,9 +15,9 @@ class CRT
   end
 
   def tick(clock, pixel)
-    x_pos = (clock - 1) % 40
+    x_pos = clock % 40
 
-    @screen[clock - 1] = '#' if (pixel - x_pos).abs < 2
+    @screen[clock] = '#' if (pixel - x_pos).abs < 2
   end
 
   def dump
@@ -71,7 +71,7 @@ while !(inputs.empty? && cpu.available?)
 
   cpu.push(inputs.shift) if cpu.available?
 
-  crt.tick(clock, cpu.register)
+  crt.tick(clock - 1, cpu.register)
   cpu.tick
 end
 
