@@ -38,8 +38,6 @@ class CPU
   end
 
   def push(input)
-    raise 'busy' if @instruction
-
     @instruction, @argument = input
     @time_to_exec = TIME_TO_EXEC[@instruction]
   end
@@ -57,16 +55,11 @@ class CPU
 
   def tick
     @time_to_exec -= 1
+    return if @time_to_exec > 0
 
-    if @time_to_exec < 1
-      self.send(@instruction)
-      @instruction = nil
-    end
+    self.send(@instruction)
+    @instruction = nil
   end
-end
-
-def compute_strengh(memory)
-  memory.each_with_index.map { |value, index| value * (20 + (index * 40)) }.sum
 end
 
 clock = 0
@@ -84,6 +77,9 @@ while !(inputs.empty? && cpu.available?)
 end
 
 # Answer 1
+def compute_strengh(memory)
+  memory.each_with_index.map { |value, index| value * (20 + (index * 40)) }.sum
+end
 pp compute_strengh(memory)
 
 # Answer 2
