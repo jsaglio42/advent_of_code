@@ -10,23 +10,17 @@ inputs =
     end
 
 CLOCK_MARKS = [20, 60, 100, 140, 180, 220].freeze
-TIME_TO_EXEC = {
-  noop: 0,
-  addx: 2
-}
+TIME_TO_EXEC = { noop: 0, addx: 2 }
 
 class CRT
   def initialize
-    @screen = " " * 240
+    @screen = ' ' * 240
   end
 
   def tick(clock, pixel)
-    return if clock > 240
     x_pos = (clock - 1) % 40
 
-    if (clock - 1) < 270 && (pixel - x_pos).abs < 2
-      @screen[clock - 1] = '#'
-    end
+    @screen[clock - 1] = '#' if (pixel - x_pos).abs < 2
   end
 
   def dump
@@ -44,7 +38,7 @@ class CPU
   end
 
   def push(input)
-    raise "busy" if @instruction
+    raise 'busy' if @instruction
 
     @instruction, @argument = input
     @time_to_exec = TIME_TO_EXEC[@instruction]
@@ -72,20 +66,18 @@ class CPU
 end
 
 def compute_strengh(memory)
-  memory.each_with_index.map { |value, index| value * CLOCK_MARKS[index] }.sum
+  memory.each_with_index.map { |value, index| value * (20 + (index * 40)) }.sum
 end
 
 clock = 0
 memory = []
 cpu = CPU.new
 crt = CRT.new
-while !(inputs.empty? && cpu.available?) do
-  clock +=1
-  memory.push(cpu.register) if CLOCK_MARKS.include?(clock)
-  
-  if cpu.available?
-    cpu.push(inputs.shift)
-  end
+while !(inputs.empty? && cpu.available?)
+  clock += 1
+  memory.push(cpu.register) if (clock % 40 == 20)
+
+  cpu.push(inputs.shift) if cpu.available?
 
   crt.tick(clock, cpu.register)
   cpu.tick
