@@ -1,7 +1,7 @@
 AllCops:
   NewCops: enable
 
-Naming/VariableNumber:
+Naming:
   Enabled: false
 
 Metrics:
@@ -11,4 +11,7 @@ Style:
   Enabled: false
 
 Layout:
+  Enabled: false
+
+Security:
   Enabled: false
