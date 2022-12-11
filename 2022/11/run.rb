@@ -15,11 +15,12 @@ class Monkey
   end
 
   def new_worry(worry)
-    eval("lambda { |old| #{@compute_string} }").call(worry)
+    @new_worry ||= eval("lambda { |old| #{@compute_string} }")
+    @new_worry.call(worry)
   end
 
   def new_monkey(worry)
-    eval("lambda { |worry| worry % #{@divider} == 0 ? #{@success_monkey} : #{@failure_monkey} }").call(worry)
+    worry % @divider == 0 ? @success_monkey : @failure_monkey
   end
 
   def process_part_1(worry, items)
@@ -69,7 +70,6 @@ pp top[0] * top[1]
 items_by_monkey = input_items_by_monkey.to_h { |k, v| [k.clone, v.clone] }
 monkeys = input_monkeys.to_h { |k, v| [k.clone, v.clone] }
 
-monkeys.values.each(&:reset_process_count)
 common_divider = monkeys.values.map(&:divider).reduce(1) { |acc, value| acc * value }
 10_000.times do
   monkeys.each do |index, monkey|
