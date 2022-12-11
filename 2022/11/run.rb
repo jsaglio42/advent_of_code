@@ -14,11 +14,6 @@ class Monkey
     @processed_count = 0
   end
 
-  def reset_process_count
-    @processed_count = 0
-  end
-
-
   def new_worry(worry)
     eval("lambda { |old| #{@compute_string} }").call(worry)
   end
