@@ -36,13 +36,13 @@ FINISH = Node.new([finish_i, finish_j], nil)
 
 def valid_neighbours(source_node, forbidden_nodes, valid_move_proc)
   source_i, source_j = source_node.coord
-  possible_coord = [
+  possible_nodes = [
     Node.new([source_i - 1, source_j], source_node),
     Node.new([source_i + 1, source_j], source_node),
     Node.new([source_i, source_j - 1], source_node),
     Node.new([source_i, source_j + 1], source_node),
   ]
-  possible_coord.reject do |dest_node|
+  possible_nodes.reject do |dest_node|
     next true if dest_node.invalid_position
     next true if !valid_move_proc.call(source_node, dest_node)
     next true if forbidden_nodes.map(&:coord).include?(dest_node.coord)
