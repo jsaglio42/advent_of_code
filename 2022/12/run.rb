@@ -4,6 +4,16 @@ class Node < Struct.new(:coord, :parent)
   def ==(other)
     coord == other.coord
   end
+
+  def invalid_position
+    i, j = coord
+    i < 0 || j < 0 || i > MAX_I || j > MAX_J
+  end
+
+  def height
+    i, j = coord
+    MAP[i][j]
+  end
 end
 
 def char_to_height(char)
@@ -24,7 +34,24 @@ finish_j = MAP[finish_i].find_index { |char| char == char_to_height('E') }
 MAP[finish_i][finish_j] = 25
 FINISH = Node.new([finish_i, finish_j], nil)
 
-def bfs(starting_node, neighbours_proc, breaking_proc)
+def valid_neighbours(source_node, forbidden_nodes, valid_move_proc)
+  source_i, source_j = source_node.coord
+  possible_coord = [
+    Node.new([source_i - 1, source_j], source_node),
+    Node.new([source_i + 1, source_j], source_node),
+    Node.new([source_i, source_j - 1], source_node),
+    Node.new([source_i, source_j + 1], source_node),
+  ]
+  possible_coord.reject do |dest_node|
+    next true if dest_node.invalid_position
+    next true if !valid_move_proc.call(source_node, dest_node)
+    next true if forbidden_nodes.map(&:coord).include?(dest_node.coord)
+
+    false
+  end
+end
+
+def bfs(starting_node, breaking_proc, valid_move_proc)
   visited_nodes = []
   nodes_to_visit = [starting_node]
   while nodes_to_visit.size > 0
@@ -33,8 +60,8 @@ def bfs(starting_node, neighbours_proc, breaking_proc)
 
     break if breaking_proc.call(current)
 
-    available_nodes = neighbours_proc.call(current, visited_nodes + nodes_to_visit)
-    available_nodes.each { |i, j| nodes_to_visit.push(Node.new([i, j], current)) }
+    available_nodes = valid_neighbours(current, visited_nodes + nodes_to_visit, valid_move_proc)
+    available_nodes.each { |node| nodes_to_visit.push(node) }
   end
   raise 'no solution' if !breaking_proc.call(visited_nodes.last)
   calculate_path(visited_nodes.last)
@@ -57,57 +84,17 @@ def draw(path)
 end
 
 # Answer 1
-neighbours_proc =
-  Proc.new do |current_node, useless_nodes|
-    current_i, current_j = current_node.coord
-    possible_coord = [
-      [current_i - 1, current_j],
-      [current_i + 1, current_j],
-      [current_i, current_j - 1],
-      [current_i, current_j + 1],
-    ]
-    possible_coord.reject do |i, j|
-      next true if i < 0 || j < 0
-      next true if i > MAX_I || j > MAX_J
-      next true if MAP[i][j] - MAP[current_i][current_j] > 1
-      next true if useless_nodes.map(&:coord).include?([i, j])
-
-      false
-    end
-  end
-
 breaking_proc = Proc.new { |node| node == FINISH }
+valid_move_proc = Proc.new { |source, dest| dest.height - source.height <= 1 }
+path = bfs(START, breaking_proc, valid_move_proc)
 
-path = bfs(START, neighbours_proc, breaking_proc)
 pp path.size - 1
 draw(path)
 
 # Answer 2
-neighbours_proc =
-  Proc.new do |current_node, useless_nodes|
-    current_i, current_j = current_node.coord
-    possible_coord = [
-      [current_i - 1, current_j],
-      [current_i + 1, current_j],
-      [current_i, current_j - 1],
-      [current_i, current_j + 1],
-    ]
-    possible_coord.reject do |i, j|
-      next true if i < 0 || j < 0
-      next true if i > MAX_I || j > MAX_J
-      next true if MAP[i][j] - MAP[current_i][current_j] < -1
-      next true if useless_nodes.map(&:coord).include?([i, j])
+breaking_proc = Proc.new { |node| node.height == 0 }
+valid_move_proc = Proc.new { |source, dest| source.height - dest.height <= 1 }
+path = bfs(FINISH, breaking_proc, valid_move_proc)
 
-      false
-    end
-  end
-
-breaking_proc =
-  Proc.new do |node|
-    i, j = node.coord
-    MAP[i][j] == 0
-  end
-
-path = bfs(FINISH, neighbours_proc, breaking_proc)
 pp path.size - 1
 draw(path)
