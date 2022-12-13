@@ -7,26 +7,24 @@ input =
     .map { |block| block.split("\n").map { |line| eval(line) } }
 
 def compare(left, right)
-  if left.is_a?(Array) && right.is_a?(Array)
-    if left.empty? && right.empty?
-      0
-    elsif left.empty?
-      -1
-    elsif right.empty?
-      1
+  case [left.class, right.class]
+  when [Array, Array]
+    if left.empty? || right.empty?
+      left.size - right.size
     else
       first_item_compare = compare(left.first, right.first)
+
       if first_item_compare.zero?
         compare(left[1..], right[1..])
       else
         first_item_compare
       end
     end
-  elsif left.is_a?(Integer) && right.is_a?(Integer)
+  when [Integer, Integer]
     left - right
-  elsif left.is_a?(Array) && right.is_a?(Integer)
+  when [Array, Integer]
     compare(left, [right])
-  elsif left.is_a?(Integer) && right.is_a?(Array)
+  when [Integer, Array]
     compare([left], right)
   end
 end
