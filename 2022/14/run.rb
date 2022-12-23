@@ -2,9 +2,11 @@
 
 require 'matrix'
 
+FILE_NAME = 'sample.txt'
+
 input =
   File
-    .read('sample.txt')
+    .read(FILE_NAME)
     .split("\n")
     .map do |line|
       line
@@ -17,7 +19,6 @@ input =
     end
 
 SOURCE = Vector[0, 500]
-
 ROCKS =
   input.each_with_object([]) do |edges, acc|
     (0...edges.size - 1).each do |edge_index|
@@ -60,27 +61,25 @@ def out_of_boundary?(vector)
   vector[0] > boundary(ROCKS, :i, :max)
 end
 
+def safe_method(a, b, method)
+  [a, b || a].send(method)
+end
+
 def draw
-  min_i = [boundary(ROCKS, :i, :min), boundary(SANDS, :i, :min)].min - 1
-  max_i = [boundary(ROCKS, :i, :max), boundary(SANDS, :i, :max)].max + 2
-  min_j = [boundary(ROCKS, :j, :min), boundary(SANDS, :j, :min)].min - 1
-  max_j = [boundary(ROCKS, :j, :max), boundary(SANDS, :j, :max)].max + 1
-  (min_i..max_i).each do |i|
-    (min_j..max_j).each do |j|
-      vector = Vector[i, j]
-      if rock?(vector)
-        print('#')
-      elsif sand?(vector)
-        print('o')
-      elsif source?(vector)
-        print('+')
-      else
-        print('.')
-      end
-    end
-    print("\n")
-  end
-  print("\n")
+  min_i = safe_method(boundary(ROCKS, :i, :min), boundary(SANDS, :i, :min), :min) - 1
+  max_i = safe_method(boundary(ROCKS, :i, :max), boundary(SANDS, :i, :max), :max) + 1
+  min_j = safe_method(boundary(ROCKS, :j, :min), boundary(SANDS, :j, :min), :min) - 1
+  max_j = safe_method(boundary(ROCKS, :j, :max), boundary(SANDS, :j, :max), :max) + 1
+
+  height = max_i - min_i + 1
+  width = max_j - min_j + 1
+
+  map = '.' * (height * width)
+  ROCKS.each { |node| map[((node[0] - min_i) * width) + (node[1] - min_j)] = '#' }
+  SANDS.each { |node| map[((node[0] - min_i) * width) + (node[1] - min_j)] = 'o' }
+
+  height.times { |idx| puts map.slice(idx * width, width) }
+  puts "\n"
 end
 
 def next_position(vector)
@@ -92,22 +91,35 @@ def stopped?(vector)
   next_position(vector) == vector
 end
 
-def fill(break_if_out_of_boundary: true)
-  while true
-    it = SOURCE
-    it = next_position(it) until (stopped?(it) || out_of_boundary?(it))
-    break if break_if_out_of_boundary && out_of_boundary?(next_position(it))
+class OutOfBoundary < StandardError
+end
+
+def fill(raise_if_oob: true)
+  sources = [SOURCE]
+  while !sources.empty?
+    if !empty?(sources.last)
+      sources.pop
+      next
+    end
+    it = sources.last
+    until (stopped?(it) || out_of_boundary?(it))
+      it = next_position(it)
+      sources << it
+    end
+    raise OutOfBoundary if raise_if_oob && out_of_boundary?(next_position(it))
     SANDS << it
-    break if it == SOURCE
   end
 end
 
 # Answer 1
-fill(break_if_out_of_boundary: true)
-pp SANDS.count
+begin
+  fill(raise_if_oob: true)
+rescue OutOfBoundary
+  pp SANDS.count
+end
 draw
 
-# Answer 1
-fill(break_if_out_of_boundary: false)
+# Answer 2
+fill(raise_if_oob: false)
 pp SANDS.count
 draw
