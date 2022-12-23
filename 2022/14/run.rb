@@ -2,7 +2,7 @@
 
 require 'matrix'
 
-FILE_NAME = 'input.txt'
+FILE_NAME = 'sample.txt'
 
 input =
   File
@@ -32,8 +32,6 @@ ROCKS =
       acc << edges.last
     end
     .map(&:to_a)
-
-
 
 def rock?(tiles, position)
   tiles[position] == '#' || position[0] == rock_bottom + 2
@@ -78,7 +76,7 @@ end
 def next_position(tiles, position)
   i, j = position
   [[1, 0], [1, -1], [1, 1]].each do |offset_i, offset_j|
-    return [i + offset_i, j + offset_j] if empty?(tiles, [i + offset_i, j + offset_j])
+    return i + offset_i, j + offset_j if empty?(tiles, [i + offset_i, j + offset_j])
   end
   position
 end
