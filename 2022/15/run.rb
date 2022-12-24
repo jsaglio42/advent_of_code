@@ -128,4 +128,4 @@ distress_line = (0..input_width(FILE)).find_index do |line_no|
   count_impossible_places(line_no, input_width(FILE)) < (input_width(FILE) + 1)
 end
 distress_column = impossible_places(distress_line, input_width(FILE)).first.last + 1
-pp distress_line + distress_column * 4_000_000
+pp(distress_line + (distress_column * 4_000_000))
