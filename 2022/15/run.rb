@@ -95,17 +95,15 @@ def truncate_range(range, min, max)
 end
 
 
-def merge_overlapping_ranges(overlapping_ranges)
-  overlapping_ranges.sort_by(&:begin).inject([]) do |ranges, range|
-    if !ranges.empty? && ranges_overlap?(ranges.last, range)
-      ranges[0...-1] + [merge_ranges(ranges.last, range)]
+def merge_overlapping_ranges(ranges)
+  ranges.sort_by(&:begin).inject([]) do |acc, range|
+    if !acc.empty? && ranges_overlap?(acc.last, range)
+      acc[0...-1] + [merge_ranges(acc.last, range)]
     else
-      ranges + [range]
+      acc + [range]
     end
   end
 end
-
-
 
 def impossible_places(line_no, width = 0)
   projected_sensors = SENSORS.map { |sensor| project_sensor(sensor, line_no) }.reject!(&:nil?)
